@@ -8,6 +8,14 @@ param(
     [string]$RootParam1
 
     # need to define the params for build and deploy to be able to pass them
+    # can we avoid to propagate these params from child scripts to the root script? 
+    # [string]$BuildParam1,
+	
+    # [string]$BuildParam2
+    
+    # [string]$DeployParam1,
+	
+    # [string]$DeployParam2
 )
  
 Set-StrictMode -Version Latest
