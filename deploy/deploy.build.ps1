@@ -2,9 +2,9 @@ param(
     [Parameter(Position=0)]
     [string[]]$Tasks,
  
-	[string]$Child1Param1,
+	[string]$DeployParam1,
 	
-	[string]$Child1Param2
+	[string]$DeployParam2
 )
  
 Set-StrictMode -Version Latest
@@ -26,12 +26,12 @@ if ([System.IO.Path]::GetFileName($MyInvocation.ScriptName) -ne 'Invoke-Build.ps
 }
  
 task task1 {
-    Write-Output "child 1 task 1 $Child1Param1"
+    Write-Output "child 2 task 1 $DeployParam1"
 }
  
-task child1task2 {
-    Write-Output "child 1 task 2 $Child1Param2"
+task deploy-task2 {
+    Write-Output "child 2 task 2 $DeployParam2"
 }
  
 # Synopsis: Default task.
-task . task1, child1task2
+task . task1, deploy-task2

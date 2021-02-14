@@ -7,7 +7,7 @@ param(
 
     [string]$RootParam1
 
-    # need to define the params for child1 and child2 to be able to pass them
+    # need to define the params for build and deploy to be able to pass them
 )
  
 Set-StrictMode -Version Latest
@@ -32,18 +32,19 @@ if ([System.IO.Path]::GetFileName($MyInvocation.ScriptName) -ne 'Invoke-Build.ps
 # clone the collection to ensure imutability
 $PSBoundParameters.Remove("Tasks") | out-null
  
-task child1 {
-    # just delegates to child1.build.ps1
-    Invoke-Build -Task $SubTasks -File "child1/child1.build.ps1" @PSBoundParameters
+task build {
+    # just delegates to build.build.ps1
+    Invoke-Build -Task $SubTasks -File "src/build.build.ps1" @PSBoundParameters
 }
 
-task child2 {
-    # just delegates to child1.build.ps1
-    Invoke-Build -Task $SubTasks -File "child2/child2.build.ps1" @PSBoundParameters
+task deploy {
+    # just delegates to deploy.build.ps1
+    Invoke-Build -Task $SubTasks -File "deploy/deploy.build.ps1" @PSBoundParameters
 }
  
 # Synopsis: Top level task.
 task roottask {
+    # some of the top level tasks may compose Tasks from the child scripts
     Write-Output "root task $RootParam1"
 }
  
