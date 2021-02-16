@@ -28,17 +28,14 @@ dynamicparam {
 		$Tasks = $dynamicparamTasks
 	}
 	if ($Tasks) {
-		write-host $Tasks
 		$skip = 'Tasks', 'Verbose', 'Debug', 'ErrorAction', 'WarningAction', 'ErrorVariable', 'WarningVariable', 'OutVariable', 'OutBuffer', 'PipelineVariable', 'InformationAction', 'InformationVariable'
 		$map = @{deploy='deploy/deploy.build.ps1'; build='src/build.build.ps1'}
 		foreach($task in $Tasks) {
 			$file = $map[$task]
 			if ($file) {
-				write-host $file
 				$params = (Get-Command $file).Parameters
 				foreach($p in $params.get_Values()) {
 					if ($skip -notcontains $p.Name) {
-						write-host $p.Name
 						$DP[$p.Name] = New-Object System.Management.Automation.RuntimeDefinedParameter $p.Name, $p.ParameterType, $p.Attributes
 					}
 				}
