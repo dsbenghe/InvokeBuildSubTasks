@@ -1,54 +1,53 @@
 param(
     [Parameter(Position=0)]
-    [string[]]$Tasks,
-
+    [string[]]$Tasks
+    ,
     [Parameter(Position=1)]
 	[ArgumentCompleter({
 		param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters)
-		$task = $fakeBoundParameters['Tasks']
-		if ($task) {
+		$Tasks = $fakeBoundParameters['Tasks']
+		if ($Tasks) {
 			$map = @{deploy='deploy/deploy.build.ps1'; build='src/build.build.ps1'}
-			$file = $map[$task]
-			if ($file) {
-				(Invoke-Build ?? $file).get_Keys()
+			foreach($task in $Tasks) {
+				$file = $map[$task]
+				if ($file) {
+					(Invoke-Build ?? $file).get_Keys()
+				}
 			}
 		}
 	})]
-    [string[]]$SubTasks,
-
+    [string[]]$SubTasks
+    ,
     [string]$RootParam1
-
-    # need to define the params for build and deploy to be able to pass them
-    # can we avoid to propagate these params from child scripts to the root script?
-    # [string]$BuildParam1,
-
-    # [string]$BuildParam2
-
-    # [string]$DeployParam1,
-
-    # [string]$DeployParam2
 )
+
 dynamicparam {
-	$skip = 'Tasks', 'Verbose', 'Debug', 'ErrorAction', 'WarningAction', 'ErrorVariable', 'WarningVariable', 'OutVariable', 'OutBuffer', 'PipelineVariable', 'InformationAction', 'InformationVariable'
 	$DP = New-Object System.Management.Automation.RuntimeDefinedParameterDictionary
-	$map = @{deploy='deploy/deploy.build.ps1'; build='src/build.build.ps1'}
 	$Tasks = $PSBoundParameters['Tasks']
 	if (!$Tasks) {
 		$Tasks = $dynamicparamTasks
 	}
-	foreach($task in $Tasks) {
-		$file = $map[$task]
-		if ($file) {
-			$params = (Get-Command $file).Parameters
-			foreach($p in $params.get_Values()) {
-				if ($skip -notcontains $p.Name) {
-					$DP[$p.Name] = New-Object System.Management.Automation.RuntimeDefinedParameter $p.Name, $p.ParameterType, $p.Attributes
+	if ($Tasks) {
+		write-host $Tasks
+		$skip = 'Tasks', 'Verbose', 'Debug', 'ErrorAction', 'WarningAction', 'ErrorVariable', 'WarningVariable', 'OutVariable', 'OutBuffer', 'PipelineVariable', 'InformationAction', 'InformationVariable'
+		$map = @{deploy='deploy/deploy.build.ps1'; build='src/build.build.ps1'}
+		foreach($task in $Tasks) {
+			$file = $map[$task]
+			if ($file) {
+				write-host $file
+				$params = (Get-Command $file).Parameters
+				foreach($p in $params.get_Values()) {
+					if ($skip -notcontains $p.Name) {
+						write-host $p.Name
+						$DP[$p.Name] = New-Object System.Management.Automation.RuntimeDefinedParameter $p.Name, $p.ParameterType, $p.Attributes
+					}
 				}
 			}
 		}
 	}
 	$DP
 }
+
 end {
 	Set-StrictMode -Version Latest
 	$ErrorActionPreference = 'Stop'
