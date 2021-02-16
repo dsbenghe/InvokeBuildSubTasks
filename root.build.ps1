@@ -65,18 +65,18 @@ end {
 		return
 	}
 
-	# delete Tasks params - SubTasks become Tasks for child scripts
-	# clone the collection to ensure imutability
-	$PSBoundParameters.Remove("Tasks") | out-null
+	# delete SubTasks, it does not exist in child scripts
+	$MyParameters = $PSBoundParameters
+	$null = $MyParameters.Remove("SubTasks")
 
 	task build {
 		# just delegates to build.build.ps1
-		Invoke-Build -Task $SubTasks -File "src/build.build.ps1" @PSBoundParameters
+		Invoke-Build -Task $SubTasks -File "src/build.build.ps1" @MyParameters
 	}
 
 	task deploy {
 		# just delegates to deploy.build.ps1
-		Invoke-Build -Task $SubTasks -File "deploy/deploy.build.ps1" @PSBoundParameters
+		Invoke-Build -Task $SubTasks -File "deploy/deploy.build.ps1" @MyParameters
 	}
 
 	# Synopsis: Top level task.
