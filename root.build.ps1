@@ -33,6 +33,9 @@ dynamicparam {
 	$DP = New-Object System.Management.Automation.RuntimeDefinedParameterDictionary
 	$map = @{deploy='deploy/deploy.build.ps1'; build='src/build.build.ps1'}
 	$Tasks = $PSBoundParameters['Tasks']
+	if (!$Tasks) {
+		$Tasks = $dynamicparamTasks
+	}
 	foreach($task in $Tasks) {
 		$file = $map[$task]
 		if ($file) {
@@ -54,6 +57,10 @@ end {
 	if ([System.IO.Path]::GetFileName($MyInvocation.ScriptName) -ne 'Invoke-Build.ps1') {
 		# bootstrap (removed for now)
 		# ...
+
+		#! hint for dynamicparam
+		$dynamicparamTasks = $Tasks
+
 		Invoke-Build -Task $Tasks -File $MyInvocation.MyCommand.Path @PSBoundParameters
 		return
 	}
