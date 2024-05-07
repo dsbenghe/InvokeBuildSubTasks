@@ -1,23 +1,9 @@
 param(
     [Parameter(Position=0)]
-    [string[]]$Tasks
-    ,
+    [string[]]$Tasks,
     [Parameter(Position=1)]
-	[ArgumentCompleter({
-		param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters)
-		$Tasks = $fakeBoundParameters['Tasks']
-		if ($Tasks) {
-			$map = @{deploy='deploy/deploy.build.ps1'; build='src/build.build.ps1'}
-			foreach($task in $Tasks) {
-				$file = $map[$task]
-				if ($file) {
-					(Invoke-Build ?? $file).get_Keys()
-				}
-			}
-		}
-	})]
-    [string[]]$SubTasks
-    ,
+	[ArgumentCompleter({ MyArgumentCompleter @args })]
+    [string[]]$SubTasks,
     [string]$RootParam1
 )
 
@@ -43,6 +29,22 @@ dynamicparam {
 		}
 	}
 	$DP
+}
+
+process {
+	function MyArgumentCompleter {
+		param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters)
+		$Tasks = $fakeBoundParameters['Tasks']
+		if ($Tasks) {
+			$map = @{deploy='deploy/deploy.build.ps1'; build='src/build.build.ps1'}
+			foreach($task in $Tasks) {
+				$file = $map[$task]
+				if ($file) {
+					(Invoke-Build ?? $file).get_Keys()
+				}
+			}
+		}
+	}
 }
 
 end {
