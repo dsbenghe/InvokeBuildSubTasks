@@ -14,10 +14,10 @@ dynamicparam {
 		$Tasks = $dynamicparamTasks
 	}
 	if ($Tasks) {
-		$skip = 'Tasks', 'Verbose', 'Debug', 'ErrorAction', 'WarningAction', 'ErrorVariable', 'WarningVariable', 'OutVariable', 'OutBuffer', 'PipelineVariable', 'InformationAction', 'InformationVariable'
+		$skip = 'Tasks', 'Verbose', 'Debug', 'ErrorAction', 'WarningAction', 'ErrorVariable', 'WarningVariable', 'OutVariable', 'OutBuffer', 'PipelineVariable', 'InformationAction', 'InformationVariable', 'ProgressAction'
 		$map = @{deploy='deploy/deploy.build.ps1'; build='src/build.build.ps1'}
-		foreach($task in $Tasks) {
-			$file = $map[$task]
+		foreach($currentTask in $Tasks) {
+			$file = $map[$currentTask]
 			if ($file) {
 				$params = (Get-Command $file).Parameters
 				foreach($p in $params.get_Values()) {
